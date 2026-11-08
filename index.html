@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>MOMENTUM — Money and Study Coach</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#070b16; --card:rgba(255,255,255,.06); --card2:rgba(255,255,255,.09);
+  --border:rgba(255,255,255,.12); --txt:#f2f4ff; --mut:#9aa3c7;
+  --grad:linear-gradient(135deg,#7c3aed,#ec4899,#f59e0b);
+  --green:#22c55e; --gold:#fbbf24; --pink:#ec4899; --violet:#8b5cf6; --cyan:#22d3ee;
+  --radius:20px;
+}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--txt);font-family:system-ui,-apple-system,"Segoe UI",Roboto,Inter,Helvetica,Arial,sans-serif;min-height:100vh;overflow-x:hidden;-webkit-tap-highlight-color:transparent}
+body::before{content:"";position:fixed;inset:0;z-index:-2;background:
+ radial-gradient(700px 420px at 10% -5%,rgba(124,58,237,.35),transparent 60%),
+ radial-gradient(650px 450px at 95% 10%,rgba(236,72,153,.28),transparent 60%),
+ radial-gradient(700px 500px at 50% 110%,rgba(34,211,238,.18),transparent 60%),#070b16}
+.blobs{position:fixed;inset:0;z-index:-1;overflow:hidden;pointer-events:none}
+.blob{position:absolute;border-radius:50%;filter:blur(90px);opacity:.35;animation:drift 14s ease-in-out infinite alternate}
+@keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(60px,40px) scale(1.2)}}
+.app{max-width:1060px;margin:0 auto;padding:14px 14px 110px}
+/* header */
+.topbar{display:flex;align-items:center;gap:12px;padding:12px 4px;position:sticky;top:0;z-index:40;background:rgba(7,11,22,.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.07);margin:0 -14px;padding-left:14px;padding-right:14px}
+.logo{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:.5px;font-size:19px}
+.logo-mark{width:40px;height:40px;border-radius:13px;background:var(--grad);display:grid;place-items:center;font-size:22px;box-shadow:0 8px 30px rgba(236,72,153,.4);animation:pulse 2.5s infinite}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}
+.logo small{display:block;font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--mut)}
+.stats{display:flex;gap:8px;margin-left:auto;align-items:center}
+.pill{display:flex;align-items:center;gap:6px;background:var(--card);border:1px solid var(--border);border-radius:999px;padding:7px 12px;font-size:13px;font-weight:800;white-space:nowrap}
+.pill.streak{border-color:rgba(251,191,36,.4);box-shadow:0 0 18px rgba(251,191,36,.15)}
+.bell{position:relative;width:42px;height:42px;border-radius:14px;background:var(--card);border:1px solid var(--border);display:grid;place-items:center;font-size:19px;cursor:pointer;transition:.2s}
+.bell:active{transform:scale(.92)}
+.badge{position:absolute;top:-6px;right:-6px;min-width:20px;height:20px;border-radius:999px;background:#ef4444;font-size:11px;font-weight:900;display:grid;place-items:center;padding:0 5px;border:2px solid #070b16}
+/* xp bar */
+.xpwrap{margin:12px 2px 4px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:10px 14px}
+.xp-top{display:flex;justify-content:space-between;font-size:12px;font-weight:800;color:var(--mut);margin-bottom:7px}
+.xp-top b{color:var(--txt)}
+.xpbar{height:10px;border-radius:99px;background:rgba(255,255,255,.08);overflow:hidden}
+.xpfill{height:100%;border-radius:99px;background:linear-gradient(90deg,#8b5cf6,#ec4899,#fbbf24);transition:width .6s cubic-bezier(.2,.9,.2,1);box-shadow:0 0 14px rgba(236,72,153,.6)}
+/* views */
+.view{display:none;animation:fadeUp .4s ease}
+.view.active{display:block}
+@keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+.hero{margin-top:14px;border-radius:26px;padding:26px 22px;background:linear-gradient(135deg,rgba(124,58,237,.35),rgba(236,72,153,.25) 50%,rgba(245,158,11,.2));border:1px solid rgba(255,255,255,.16);position:relative;overflow:hidden}
+.hero::after{content:"";position:absolute;right:10px;top:-10px;font-size:110px;opacity:.14;transform:rotate(15deg)}
+.hero h1{font-size:clamp(24px,5vw,36px);line-height:1.12;font-weight:900}
+.hero h1 .hl{background:linear-gradient(90deg,#fbbf24,#ec4899,#22d3ee);-webkit-background-clip:text;background-clip:text;color:transparent}
+.hero p{color:#d5dbf7;margin-top:8px;font-size:14.5px;line-height:1.55;max-width:560px}
+.hero-btns{display:flex;gap:10px;margin-top:16px;flex-wrap:wrap}
+.btn{border:0;cursor:pointer;font-weight:900;border-radius:14px;padding:13px 20px;font-size:14px;transition:.18s;color:#0b0713}
+.btn:active{transform:scale(.96)}
+.btn-p{background:linear-gradient(135deg,#fbbf24,#ec4899);color:#fff;box-shadow:0 10px 30px rgba(236,72,153,.4)}
+.btn-g{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2)}
+.btn-green{background:linear-gradient(135deg,#22c55e,#22d3ee);color:#04220f}
+.btn-red{background:rgba(239,68,68,.15);color:#fca5a5;border:1px solid rgba(239,68,68,.4)}
+.btn-sm{padding:9px 14px;font-size:12.5px;border-radius:11px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+@media(max-width:700px){.grid2{grid-template-columns:1fr}}
+.card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:18px;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.card h3{font-size:15px;font-weight:900;display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.card p.sub{font-size:12.5px;color:var(--mut);line-height:1.5}
+.ring-wrap{display:flex;align-items:center;gap:16px;margin-top:6px}
+.ring{position:relative;width:110px;height:110px;flex-shrink:0}
+.ring svg{transform:rotate(-90deg)}
+.ring .pct{position:absolute;inset:0;display:grid;place-items:center;font-weight:900;font-size:20px}
+.ring .pct small{font-size:10px;color:var(--mut);display:block;text-align:center}
+.kv{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px dashed rgba(255,255,255,.09);font-size:13px}
+.kv:last-child{border:0}
+.kv b{font-size:14px}
+.tag{display:inline-block;font-size:10.5px;font-weight:900;letter-spacing:1px;padding:4px 10px;border-radius:99px;text-transform:uppercase}
+.tag.money{background:rgba(34,197,94,.16);color:#86efac;border:1px solid rgba(34,197,94,.4)}
+.tag.study{background:rgba(34,211,238,.14);color:#a5f3fc;border:1px solid rgba(34,211,238,.4)}
+.tag.mind{background:rgba(236,72,153,.15);color:#f9a8d4;border:1px solid rgba(236,72,153,.4)}
+.tag.gold{background:rgba(251,191,36,.15);color:#fde68a;border:1px solid rgba(251,191,36,.4)}
+.quest{display:flex;gap:12px;align-items:flex-start;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:16px;padding:14px;margin-top:10px;transition:.2s}
+.quest.done{opacity:.55;border-color:rgba(34,197,94,.4);background:rgba(34,197,94,.07)}
+.quest.done .q-title{text-decoration:line-through}
+.check{width:28px;height:28px;border-radius:10px;border:2px solid rgba(255,255,255,.25);flex-shrink:0;display:grid;place-items:center;cursor:pointer;font-size:16px;transition:.2s;background:rgba(255,255,255,.04)}
+.check.on{background:linear-gradient(135deg,#22c55e,#22d3ee);border-color:transparent}
+.q-title{font-weight:800;font-size:14px}
+.q-meta{font-size:12px;color:var(--mut);margin-top:3px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.xp-chip{font-size:11px;font-weight:900;color:#fde68a;background:rgba(251,191,36,.14);padding:2px 8px;border-radius:99px;border:1px solid rgba(251,191,36,.35)}
+.sec-title{display:flex;align-items:center;justify-content:space-between;margin:22px 2px 4px}
+.sec-title h2{font-size:18px;font-weight:900}
+.sec-title span{font-size:12px;color:var(--mut)}
+/* path timeline */
+.phase{margin-top:14px;border-radius:20px;overflow:hidden;border:1px solid var(--border);background:var(--card)}
+.phase-head{padding:16px 18px;display:flex;gap:12px;align-items:center;cursor:pointer;user-select:none}
+.phase-num{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-weight:900;font-size:18px;flex-shrink:0}
+.phase-head h4{font-size:15px}
+.phase-head p{font-size:12px;color:var(--mut);margin-top:2px}
+.phase-body{display:none;padding:0 14px 14px}
+.phase.open .phase-body{display:block}
+.phase.open .chev{transform:rotate(180deg)}
+.chev{margin-left:auto;transition:.25s;color:var(--mut)}
+.ms{border:1px solid var(--border);border-radius:14px;padding:12px 14px;margin-top:10px;background:rgba(255,255,255,.03)}
+.ms-top{display:flex;gap:10px;align-items:center}
+.ms-top b{font-size:13.5px}
+.ms small{color:var(--mut);font-size:12px;display:block;margin-top:4px;line-height:1.5}
+.ms-tasks{margin-top:8px;display:flex;flex-direction:column;gap:6px}
+.mtask{display:flex;gap:9px;align-items:center;font-size:13px;background:rgba(255,255,255,.04);padding:8px 10px;border-radius:10px;cursor:pointer}
+.mtask .dot{width:18px;height:18px;border-radius:7px;border:2px solid rgba(255,255,255,.25);display:grid;place-items:center;font-size:12px;flex-shrink:0}
+.mtask.done{opacity:.55}.mtask.done .mt{strikethrough}.mtask.done .mt{text-decoration:line-through}
+.mtask.done .dot{background:var(--green);border-color:var(--green)}
+.pbar{height:7px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;margin-top:10px}
+.pbar i{display:block;height:100%;background:linear-gradient(90deg,#22c55e,#22d3ee);border-radius:99px;transition:width .4s}
+/* focus timer */
+.timer-card{text-align:center;padding:30px 20px;margin-top:14px;border-radius:26px;background:linear-gradient(180deg,rgba(34,211,238,.12),rgba(124,58,237,.12));border:1px solid rgba(34,211,238,.25)}
+.timer{font-size:clamp(56px,12vw,84px);font-weight:900;font-variant-numeric:tabular-nums;letter-spacing:2px}
+.mode-row{display:flex;gap:8px;justify-content:center;margin:12px 0 18px;flex-wrap:wrap}
+.mode{padding:8px 16px;border-radius:99px;font-size:12.5px;font-weight:800;background:rgba(255,255,255,.07);border:1px solid var(--border);cursor:pointer;color:var(--txt)}
+.mode.on{background:linear-gradient(135deg,#22d3ee,#8b5cf6);border-color:transparent}
+.tbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap}
+/* wins */
+.money-big{font-size:42px;font-weight:900;color:#86efac}
+.bars{display:flex;align-items:flex-end;gap:8px;height:120px;margin-top:14px;padding:10px;background:rgba(0,0,0,.25);border-radius:14px}
+.bar{flex:1;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#22c55e,#15803d);min-height:6px;position:relative;transition:.3s}
+.bar span{position:absolute;top:-18px;left:50%;transform:translateX(-50%);font-size:10px;font-weight:800;color:var(--mut)}
+.win-item{display:flex;gap:10px;align-items:center;background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:13px;padding:11px 13px;margin-top:8px;font-size:13px}
+.win-item b{color:#86efac}
+input,select,textarea{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:13px;padding:12px 14px;color:#fff;font-size:14px;outline:none;font-family:inherit}
+input:focus,select:focus,textarea:focus{border-color:var(--violet);box-shadow:0 0 0 3px rgba(139,92,246,.25)}
+label{font-size:12px;font-weight:800;color:var(--mut);letter-spacing:.6px;text-transform:uppercase;display:block;margin:12px 0 6px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:560px){.row2{grid-template-columns:1fr}}
+/* coach */
+.chat{margin-top:14px;display:flex;flex-direction:column;gap:10px;max-height:46vh;overflow-y:auto;padding:4px 2px}
+.msg{max-width:85%;padding:12px 15px;border-radius:16px;font-size:13.5px;line-height:1.55;animation:fadeUp .3s}
+.msg.bot{background:rgba(139,92,246,.16);border:1px solid rgba(139,92,246,.35);border-bottom-left-radius:6px;align-self:flex-start}
+.msg.me{background:linear-gradient(135deg,#ec4899,#f59e0b);align-self:flex-end;border-bottom-right-radius:6px;font-weight:600}
+.msg.typing{opacity:.7}
+.quick{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.qr{font-size:12px;font-weight:800;padding:8px 13px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid var(--border);color:#fff;cursor:pointer}
+.qr:active{transform:scale(.95)}
+.chatbar{display:flex;gap:8px;margin-top:12px}
+.chatbar input{flex:1}
+.sendbtn{width:52px;border-radius:13px;border:0;background:var(--grad);font-size:20px;cursor:pointer;flex-shrink:0}
+/* bottom nav */
+.nav{position:fixed;bottom:0;left:0;right:0;z-index:50;background:rgba(7,11,22,.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-top:1px solid rgba(255,255,255,.1);padding:10px 8px calc(10px + env(safe-area-inset-bottom))}
+.nav-in{max-width:640px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.nav button{background:none;border:0;color:var(--mut);font-size:10px;font-weight:800;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px;border-radius:12px;cursor:pointer;letter-spacing:.4px}
+.nav button .ic{font-size:21px}
+.nav button.on{color:#fff;background:rgba(139,92,246,.18)}
+/* onboarding */
+.overlay{position:fixed;inset:0;z-index:100;background:rgba(4,6,14,.82);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);display:flex;align-items:flex-start;justify-content:center;overflow-y:auto;padding:24px 14px}
+.sheet{width:100%;max-width:560px;background:linear-gradient(180deg,#151b33,#0c1122);border:1px solid rgba(255,255,255,.15);border-radius:26px;padding:28px 24px;box-shadow:0 30px 80px rgba(0,0,0,.6);animation:fadeUp .4s}
+.sheet h2{font-size:24px;font-weight:900}
+.sheet p.d{font-size:13.5px;color:var(--mut);margin-top:6px;line-height:1.55}
+.steps{display:flex;gap:6px;margin:16px 0}
+.steps i{flex:1;height:5px;border-radius:99px;background:rgba(255,255,255,.1)}
+.steps i.on{background:var(--grad)}
+.opt-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+.opt{border:2px solid var(--border);background:rgba(255,255,255,.04);border-radius:16px;padding:16px 12px;text-align:center;cursor:pointer;transition:.18s}
+.opt .e{display:none}
+.opt b{display:block;margin-top:8px;font-size:14px}
+.opt small{color:var(--mut);font-size:11.5px}
+.opt.sel{border-color:var(--pink);background:rgba(236,72,153,.12);box-shadow:0 0 24px rgba(236,72,153,.25)}
+.hype-opts{display:flex;flex-direction:column;gap:10px;margin-top:12px}
+.hype{border:2px solid var(--border);border-radius:16px;padding:13px 15px;cursor:pointer;display:flex;gap:12px;align-items:center;background:rgba(255,255,255,.03)}
+.hype.sel{border-color:var(--gold);background:rgba(251,191,36,.08)}
+.hype .e{display:none}.hype b{font-size:14px}.hype small{color:var(--mut);font-size:12px;display:block;margin-top:2px}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(400px,92vw);z-index:90;background:#0d1326;border-left:1px solid var(--border);transform:translateX(105%);transition:transform .3s cubic-bezier(.2,.9,.3,1);display:flex;flex-direction:column;box-shadow:-20px 0 60px rgba(0,0,0,.5)}
+.drawer.open{transform:none}
+.drawer-head{padding:18px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border)}
+.drawer-head h3{font-size:17px;font-weight:900}
+.notif-list{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px}
+.notif{background:rgba(255,255,255,.05);border:1px solid var(--border);border-radius:14px;padding:12px 13px;font-size:13px;animation:fadeUp .3s}
+.notif.unread{border-color:rgba(236,72,153,.45);background:rgba(236,72,153,.08)}
+.notif b{font-size:13px;display:block;margin-bottom:3px}
+.notif small{color:var(--mut);font-size:11px}
+.notif p{line-height:1.5;margin:2px 0 4px}
+/* toasts */
+#toasts{position:fixed;top:70px;right:12px;z-index:120;display:flex;flex-direction:column;gap:10px;width:min(360px,calc(100vw - 24px))}
+.toast{background:linear-gradient(135deg,#1a2140,#141a33);border:1px solid rgba(236,72,153,.4);border-radius:16px;padding:13px 15px;box-shadow:0 16px 50px rgba(0,0,0,.55);animation:slideIn .35s cubic-bezier(.2,.9,.3,1.1);cursor:pointer}
+.toast.out{animation:slideOut .3s forwards}
+@keyframes slideIn{from{opacity:0;transform:translateX(80px)}to{opacity:1;transform:none}}
+@keyframes slideOut{to{opacity:0;transform:translateX(80px)}}
+.toast b{font-size:13.5px;display:flex;gap:7px;align-items:center}
+.toast p{font-size:12.5px;color:#d5dbf7;margin-top:4px;line-height:1.5}
+/* settings toggles */
+.set-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:13px 2px;border-bottom:1px dashed rgba(255,255,255,.1);font-size:13.5px}
+.set-row:last-child{border:0}
+.set-row small{display:block;color:var(--mut);font-size:11.5px;margin-top:2px}
+.tgl{width:50px;height:28px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid var(--border);position:relative;cursor:pointer;flex-shrink:0;transition:.2s}
+.tgl::after{content:"";position:absolute;top:3px;left:4px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s}
+.tgl.on{background:linear-gradient(135deg,#22c55e,#22d3ee)}
+.tgl.on::after{left:24px}
+.quote{margin-top:14px;border-radius:18px;padding:18px;background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(236,72,153,.12));border:1px solid rgba(251,191,36,.3);font-size:14px;line-height:1.6;font-style:italic}
+.quote b{display:block;margin-top:8px;font-style:normal;font-size:12px;color:var(--gold)}
+.hidden{display:none!important}
+.confetti{position:fixed;inset:0;pointer-events:none;z-index:200}
+.kbd-hint{font-size:11px;color:var(--mut);text-align:center;margin-top:14px}
+.live-dot{width:8px;height:8px;border-radius:50%;background:#22c55e;display:inline-block;animation:pulse 1.5s infinite;margin-right:6px}
+.footer{text-align:center;font-size:11px;color:var(--mut);margin-top:26px;line-height:1.7}
+
+/* MOMENTUM / design system */
+:root{--bg:#0b0d0b;--card:#151815;--card2:#1b201b;--border:#2b312a;--txt:#f4f5ed;--mut:#8e988b;--accent:#c4f65a;--accent2:#8bbd34;--grad:linear-gradient(135deg,var(--accent),var(--accent2));--violet:var(--accent);--gold:var(--accent);--pink:var(--accent);--cyan:var(--accent);--radius:16px}
+:root[data-theme="ice"]{--bg:#0b1016;--card:#121c25;--card2:#1a2833;--border:#2a3a46;--txt:#edf7fb;--mut:#91a5ae;--accent:#8ae7f3;--accent2:#4da4c4}
+:root[data-theme="ember"]{--bg:#130e0c;--card:#211815;--card2:#2b201b;--border:#42312a;--txt:#fff3e9;--mut:#b7a198;--accent:#ff9a68;--accent2:#c95f40}
+body{font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;letter-spacing:-.02em}body::before{background:radial-gradient(ellipse at 90% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 40%),var(--bg)}.blobs,.confetti{display:none}.app{max-width:1350px;padding:18px 40px 90px 254px}.topbar{margin:0;padding:0 0 18px;background:transparent;border-color:var(--border);position:relative;gap:20px}.logo-mark{background:var(--accent);color:var(--bg);border-radius:9px;width:39px;height:39px;font-size:23px;box-shadow:none;animation:none;font-weight:1000}.logo{font-size:15px;letter-spacing:.09em}.logo small{font-size:8px;letter-spacing:.18em;margin-top:3px}.stats{gap:9px}.pill,.bell{background:var(--card);border-color:var(--border);border-radius:8px;color:var(--txt);box-shadow:none!important}.pill{font-size:11px}.bell{width:39px;height:39px}.bell:before{content:'◉';font-size:16px}.theme-label{margin:0;color:var(--mut);font-size:9px;letter-spacing:.13em}.stats select{width:auto;padding:8px 27px 8px 10px;font-size:11px;background:var(--card);border-radius:8px;color:var(--txt)}.xpwrap{margin:20px 0 0;padding:0;background:none;border:0}.xp-top{font-size:10px;letter-spacing:.1em}.live-dot{background:var(--accent);animation:none}.xpbar{height:3px;background:var(--border)}.xpfill,.pbar i{background:var(--accent);box-shadow:none}.hero{margin-top:20px;padding:39px;min-height:260px;border-radius:18px;background:radial-gradient(ellipse at 90% 35%,color-mix(in srgb,var(--accent) 19%,transparent),transparent 40%),linear-gradient(115deg,var(--card2),var(--card));border-color:var(--border)}.hero:after{content:'M';font-size:250px;line-height:1;color:var(--accent);opacity:.07;right:3%;top:10%;font-weight:1000;transform:rotate(-12deg)}.hero-kicker,.page-kicker,.card-eyebrow{font-size:10px;letter-spacing:.18em;color:var(--accent);font-weight:800}.hero-kicker span{color:var(--mut)}.hero .tag{margin:18px 0 12px;padding:0;background:none;border:0;color:var(--mut);letter-spacing:.13em}.hero h1{font-size:clamp(34px,4vw,58px);letter-spacing:-.055em;line-height:1.05}.hero h1 .hl{background:none;color:var(--accent)}.hero p{color:var(--mut);font-size:13px;margin-top:14px}.hero-btns{margin-top:25px}.btn{border-radius:8px;font-size:11px;letter-spacing:.02em;padding:13px 17px}.btn-p,.btn-green{background:var(--accent);color:var(--bg);box-shadow:none}.btn-g{background:transparent;border:1px solid #414b3d;color:var(--txt)}.grid2{gap:14px;margin-top:14px}.card,.phase{background:var(--card);border-color:var(--border);box-shadow:none}.card{padding:22px}.card h3{font-size:14px;letter-spacing:-.01em}.card p.sub,.section-intro{color:var(--mut);line-height:1.6}.kv{border-color:var(--border);font-size:12px}.kv b{font-size:12px}.ring{transform:scale(.86);margin-left:-7px}.ring svg circle:nth-child(2){stroke:var(--accent)}.sec-title{margin:30px 0 12px}.sec-title h2{font-size:21px;letter-spacing:-.04em}.sec-title span{font-size:10px;letter-spacing:.08em;text-transform:uppercase}.quest{background:var(--card);border-color:var(--border);border-radius:12px;padding:16px;margin-top:8px}.check{border-radius:6px;border-color:#56614f;width:24px;height:24px}.check.on{background:var(--accent);color:var(--bg)}.q-title{font-size:13px}.q-meta{font-size:11px}.tag,.xp-chip{border-radius:4px;font-size:9px;letter-spacing:.08em}.tag.money,.tag.study,.tag.mind,.tag.gold,.xp-chip{background:color-mix(in srgb,var(--accent) 10%,transparent);border:0;color:var(--accent)}.quote{background:var(--card);border-color:var(--border);font-size:13px}.quote b{color:var(--accent)}.nav{left:0;right:auto;top:0;bottom:0;width:210px;padding:112px 18px 20px;background:var(--bg);border-top:0;border-right:1px solid var(--border);backdrop-filter:none}.nav:before{content:'WORKSPACE';display:block;color:var(--mut);font-size:9px;letter-spacing:.18em;font-weight:800;margin:0 12px 18px}.nav:after{content:'BUILT FOR THE WORK.\A NOT THE EXCUSES.';white-space:pre;position:absolute;bottom:28px;left:29px;color:var(--mut);font-size:9px;letter-spacing:.13em;line-height:1.8}.nav-in{display:flex;flex-direction:column;gap:5px}.nav button{height:45px;display:flex;flex-direction:row;gap:13px;justify-content:flex-start;padding:0 12px;font-size:10px;letter-spacing:.1em;border-radius:8px}.nav button .ic{font-size:20px;width:22px;text-align:center;line-height:1;font-weight:400}.nav button.on{background:color-mix(in srgb,var(--accent) 13%,transparent);color:var(--accent)}.timer-card{background:var(--card);border-color:var(--border)}.mode.on{background:var(--accent);color:var(--bg)}.msg.bot{background:var(--card2);border-color:var(--border)}.msg.me{background:var(--accent);color:var(--bg)}.chat{max-height:50vh;min-height:200px}.sendbtn{background:var(--accent);color:var(--bg)}.qr{color:var(--txt)}input,select,textarea{background:var(--bg);color:var(--txt);border-color:var(--border);border-radius:8px;font-size:16px}input:focus,select:focus,textarea:focus{border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 16%,transparent)}.sheet,.drawer,.toast{background:var(--card);border-color:var(--border)}.overlay{padding-top:30px}.opt.sel,.hype.sel{border-color:var(--accent);background:color-mix(in srgb,var(--accent) 8%,transparent);box-shadow:none}.steps i.on{background:var(--accent)}.tgl.on{background:var(--accent)}.footer{opacity:.6}.money-big{color:var(--accent)}.bar{background:var(--accent)}.page-kicker{margin-top:30px}.accent-dot{color:var(--accent)!important;font-size:inherit!important}.section-intro{font-size:13px;max-width:660px;margin-bottom:20px}.vinted-status{background:linear-gradient(110deg,var(--card2),var(--card));border:1px solid var(--border);border-radius:16px;padding:25px;display:flex;align-items:center;justify-content:space-between;gap:25px}.vinted-status h3{font-size:21px;letter-spacing:-.04em;margin:12px 0 8px}.vinted-status p{font-size:12px;line-height:1.65;color:var(--mut);max-width:610px}.vinted-status a{white-space:nowrap;text-decoration:none}.status-label{color:var(--accent);font-size:10px;letter-spacing:.13em;font-weight:800}.status-dot{display:inline-block;width:7px;height:7px;background:var(--accent);border-radius:50%;margin-right:5px}.v-metrics{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0}.v-metrics>div{padding:20px;background:var(--card);border:1px solid var(--border);border-radius:12px}.v-metrics span{display:block;font-size:9px;letter-spacing:.12em;color:var(--mut);font-weight:800}.v-metrics strong{display:block;font-size:26px;margin-top:8px}.v-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}.v-grid h3{font-size:19px;margin:9px 0}.v-form .btn{width:100%;display:flex;justify-content:space-between;margin-top:18px}.v-note{font-size:11px;color:var(--mut);line-height:1.5;margin-top:13px}.v-empty{text-align:center;padding:50px 15px;color:var(--mut);font-size:12px}.v-empty b{color:var(--txt);display:block;margin:12px 0 5px}.empty-symbol{font-size:25px;color:var(--accent)}.v-item{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:15px 0;border-bottom:1px solid var(--border)}.v-item-main{display:flex;align-items:center;gap:10px;min-width:0}.v-item-main b{display:block;font-size:12px;overflow-wrap:anywhere}.v-item-main small{display:block;color:var(--mut);font-size:10px;margin-top:5px}.v-item-icon{width:36px;height:36px;display:grid;place-items:center;background:var(--card2);color:var(--accent);border-radius:8px;flex-shrink:0}.v-actions{display:flex;align-items:center;gap:5px}.v-actions button{border:1px solid var(--border);background:var(--card2);color:var(--txt);border-radius:6px;padding:7px;font-size:10px;cursor:pointer}.v-actions .v-delete{font-size:16px}.badge{border-color:var(--bg)}
+@media(max-width:760px){.app{padding:12px 16px calc(105px + env(safe-area-inset-bottom))}.topbar{padding:0 0 13px}.logo{font-size:12px}.logo-mark{width:34px;height:34px}.logo small{font-size:7px}.pill{padding:6px;font-size:10px}.theme-label{display:none}.stats{gap:5px}.stats select{font-size:10px;padding:7px 3px;max-width:68px}.bell{width:34px;height:34px}.hero{padding:25px 20px;min-height:0}.hero:after{font-size:170px;top:20%}.hero h1{font-size:38px}.hero p{max-width:85%}.hero-btns .btn{flex:1}.nav{left:0;right:0;top:auto;bottom:0;width:auto;height:auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));background:var(--bg);border:0;border-top:1px solid var(--border)}.nav:before,.nav:after{display:none}.nav-in{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:1px}.nav button{height:52px;min-width:0;flex-direction:column;gap:2px;justify-content:center;padding:3px 0;font-size:8px;letter-spacing:.03em}.nav button .ic{font-size:20px}.v-grid{grid-template-columns:1fr}.vinted-status{align-items:flex-start;flex-direction:column;padding:20px;gap:15px}.v-metrics{gap:6px}.v-metrics>div{padding:13px 10px}.v-metrics strong{font-size:20px}.v-metrics span{font-size:8px;letter-spacing:.04em}.sec-title h2{font-size:20px}.sec-title span{font-size:9px}.card{padding:18px}.chat{min-height:180px;max-height:42vh}.msg{max-width:92%}.chatbar input{min-width:0}.sheet{padding:22px 18px}.overlay{padding:12px}.hero-btns .btn{min-height:44px}.btn,.qr,.mode{min-height:44px}.v-actions button{min-height:40px}.theme-label{display:none}.pill.streak{display:none}}
+@media(max-width:360px){.logo small{display:none}.logo{font-size:11px}.stats{gap:3px}.hero h1{font-size:32px}.hero-btns{flex-direction:column}.v-metrics strong{font-size:18px}}
+@media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important;scroll-behavior:auto!important}}
+
+
+/* Minimal conversational interface */
+:root,:root[data-theme="volt"]{--bg:#0c0c0d;--card:#151516;--card2:#202021;--border:#303032;--txt:#f5f5f5;--mut:#9b9b9e;--accent:#f3f3f3;--accent2:#aaa;--violet:#eee;--gold:#eee;--pink:#eee;--cyan:#eee;--grad:linear-gradient(135deg,#fff,#bbb)}
+:root[data-theme="ice"]{--bg:#fff;--card:#f7f7f8;--card2:#eeeef0;--border:#dedee1;--txt:#141416;--mut:#68686e;--accent:#171719;--accent2:#444;--violet:#333;--gold:#333;--pink:#333;--cyan:#333;--grad:linear-gradient(135deg,#222,#777)}
+:root[data-theme="ember"]{--bg:#11151a;--card:#1a2026;--card2:#242d35;--border:#39424a;--txt:#f0f3f5;--mut:#a2adb6;--accent:#e5edf1;--accent2:#a8bbc6;--violet:#e5edf1;--gold:#e5edf1;--pink:#e5edf1;--cyan:#e5edf1;--grad:linear-gradient(135deg,#eee,#aaa)}
+body{letter-spacing:-.018em}body::before{background:var(--bg)}.app{max-width:1450px;padding:22px 48px 100px 284px}.topbar{border-bottom:1px solid var(--border);padding-bottom:20px}.logo{font-size:14px;letter-spacing:-.02em}.logo small{letter-spacing:.12em;font-size:8px}.logo-mark{background:var(--txt);color:var(--bg);border-radius:50%;width:35px;height:35px;font-size:18px;font-weight:900}.stats select,.pill,.bell{border-radius:999px;background:var(--bg)}.bell{border:0}.theme-label{display:none}.xpwrap{margin:20px 0 0}.xp-top{letter-spacing:.04em;font-weight:600}.xpbar{height:2px}.hero{border:0;background:transparent;padding:58px 0 44px;min-height:0;margin-top:0}.hero:after{display:none}.hero-kicker{color:var(--mut);font-size:10px;letter-spacing:.12em}.hero .tag{margin-top:20px;font-size:10px}.hero h1{font-size:clamp(37px,4.2vw,62px);letter-spacing:-.055em;font-weight:650}.hero h1 .hl{color:var(--txt)}.hero p{font-size:15px;line-height:1.6}.hero-btns{margin-top:24px;gap:9px}.btn{font-weight:650;font-size:12px;border-radius:999px;padding:12px 18px;min-height:44px}.btn-p,.btn-green{background:var(--txt);color:var(--bg)}.btn-g{background:transparent;border:1px solid var(--border);color:var(--txt)}.btn:hover,.qr:hover,.nav button:hover{filter:brightness(.9)}.grid2{gap:12px}.card,.phase,.quest,.v-metrics>div{border:1px solid var(--border);background:var(--card);border-radius:18px}.card{padding:22px}.quest{margin-top:8px;padding:16px}.check{border-radius:50%;border-color:var(--mut)}.check.on{background:var(--txt);color:var(--bg)}.tag.money,.tag.study,.tag.mind,.tag.gold,.xp-chip{background:var(--card2);color:var(--mut);border-radius:999px}.quote{background:transparent;border:1px solid var(--border)}.nav{width:240px;background:var(--bg);padding:115px 15px 20px}.nav:before{content:'YOUR SPACE';font-size:10px;color:var(--mut);letter-spacing:.08em}.nav:after{content:'Momentum\A Small steps. Real progress.';white-space:pre;font-size:11px;letter-spacing:0;line-height:1.7}.nav button{border-radius:999px;letter-spacing:.01em;text-transform:capitalize;font-size:12px;font-weight:600;height:46px}.nav button.on{background:var(--card2);color:var(--txt)}.nav button .ic{font-size:19px}.timer-card{background:var(--card);border-color:var(--border)}.mode{color:var(--txt)}.mode.on{background:var(--txt);color:var(--bg)}.vinted-status{background:var(--card);border-color:var(--border)}.v-item-icon{background:var(--card2);color:var(--txt)}.v-actions button{color:var(--txt)}.money-big,.win-item b{color:var(--txt)}.bar{background:var(--txt)}.sheet,.drawer,.toast{background:var(--card);border-color:var(--border)}.opt,.hype{background:var(--card2)}.opt.sel,.hype.sel{border-color:var(--txt);background:var(--card2)}.tgl.on{background:var(--txt)}.tgl.on:after{background:var(--bg)}.tag.study,.tag.money{color:var(--mut)}.toast p{color:var(--mut)}
+#v-coach{max-width:760px;margin:0 auto}#v-coach.active{padding-top:30px}.coach-heading{text-align:center;padding:20px 0 22px}.coach-mark{width:50px;height:50px;margin:0 auto 20px;background:var(--txt);color:var(--bg);border-radius:50%;display:grid;place-items:center;font-size:23px;font-weight:900}.coach-heading h2{font-size:clamp(25px,3.2vw,36px);letter-spacing:-.045em;font-weight:650}.coach-heading p{color:var(--mut);font-size:13px;margin-top:10px}.coach-disclaimer{font-size:9px;color:var(--mut);letter-spacing:.08em;margin-top:13px}.coach-disclaimer .live-dot{width:6px;height:6px;background:var(--mut)}#v-coach>.card{border:0;background:transparent;padding:0}.chat{max-height:38vh;min-height:140px;gap:14px;padding:8px}.msg{font-size:14px;line-height:1.6;max-width:88%;padding:13px 17px;border-radius:20px}.msg.bot{background:transparent;border:0;padding-left:0;color:var(--txt)}.msg.me{background:var(--card2);color:var(--txt);border-radius:20px}.quick{justify-content:center;gap:7px;margin-top:18px}.qr{border-radius:999px;background:transparent;border-color:var(--border);color:var(--txt);font-size:11px;font-weight:600;padding:9px 13px}.chatbar{border:1px solid var(--border);background:var(--card);border-radius:25px;padding:8px;margin-top:15px;align-items:center}.chatbar input{background:transparent;border:0;box-shadow:none!important;padding:13px 12px}.sendbtn{width:42px;height:42px;background:var(--txt);color:var(--bg);border-radius:50%;font-size:20px}.chatbar input::placeholder{color:var(--mut)}input,select,textarea{color:var(--txt)}.status-label,.card-eyebrow,.page-kicker{color:var(--mut)}.status-dot{background:var(--mut)}
+@media(max-width:760px){.app{padding:14px 17px calc(100px + env(safe-area-inset-bottom))}.topbar{padding-bottom:14px}.logo{font-size:13px}.logo-mark{width:32px;height:32px}.hero{padding:34px 0 30px}.hero h1{font-size:38px}.hero p{font-size:13px;max-width:100%}.hero-btns{flex-wrap:wrap}.hero-btns .btn{flex:none}.nav{width:auto;padding:6px 5px calc(6px + env(safe-area-inset-bottom));background:var(--bg)}.nav button{border-radius:12px;height:50px;font-size:9px}.nav button .ic{font-size:19px}.nav button.on{background:var(--card2)}#v-coach.active{padding-top:10px}.coach-heading{padding:18px 0 15px}.coach-mark{width:42px;height:42px;margin-bottom:15px}.coach-heading h2{font-size:26px}.coach-heading p{font-size:12px}.chat{min-height:135px;max-height:35vh}.quick{justify-content:flex-start;flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px}.qr{flex-shrink:0}.chatbar{border-radius:22px}.v-grid{grid-template-columns:1fr}.card{padding:18px}.v-metrics>div{padding:14px 10px}.sheet{padding:22px 18px}}
+
+</style>
+</head>
+<body>
+<div class="blobs"><div class="blob" style="width:340px;height:340px;background:#7c3aed;top:-80px;left:-80px"></div><div class="blob" style="width:300px;height:300px;background:#ec4899;top:20%;right:-100px;animation-delay:2s"></div><div class="blob" style="width:380px;height:380px;background:#0ea5e9;bottom:-120px;left:20%;animation-delay:4s"></div></div>
+<canvas class="confetti" id="confetti"></canvas>
+
+<div class="app">
+  <div class="topbar">
+    <div class="logo"><div class="logo-mark">M</div><div>MOMENTUM<small>PERSONAL COACH</small></div></div>
+    <div class="stats"><label class="theme-label" for="themeSelect">THEME</label><select id="themeSelect" aria-label="Choose theme"><option value="volt">Dark</option><option value="ice">Light</option><option value="ember">Slate</option></select>
+      <div class="pill streak"> <span id="streak">0</span></div>
+      <div class="pill"> <span id="xpTop">0</span> <span style="color:var(--mut);font-size:11px" id="lvlTop">LVL 1</span></div>
+      <div class="bell" id="bellBtn" title="Notifications" role="button" tabindex="0" aria-label="Notifications"><div class="badge hidden" id="bellBadge">0</div></div>
+    </div>
+  </div>
+
+  <div class="xpwrap">
+    <div class="xp-top"><span><span class="live-dot"></span>YOUR SYSTEM IS <b id="coachState">ACTIVE</b></span><span><b id="xpText">0 XP</b> · <span id="lvlText">Level 1</span></span></div>
+    <div class="xpbar"><div class="xpfill" id="xpFill" style="width:0%"></div></div>
+  </div>
+
+  <!-- HOME -->
+  <div class="view active" id="v-home">
+    <div class="hero"><div class="hero-kicker">YOUR PERSONAL COACH <span> / TODAY</span></div>
+      <div class="tag gold" id="dateTag"> TODAY</div>
+      <h1 id="greet">Let's get this <span class="hl">money & grades.</span></h1>
+      <p id="heroSub">A clear plan. Daily action. No waiting for the perfect moment.</p>
+      <div class="hero-btns">
+        <button class="btn btn-p" id="newGoalBtn"> New Goal / Rebuild Path</button>
+        <button class="btn btn-g" onclick="go('coach')">Talk to your coach <span>↗</span></button><button class="btn btn-g" id="pushNowBtn">Get a reminder</button>
+      </div>
+    </div>
+
+    <div class="grid2">
+      <div class="card">
+        <h3>Path Progress</h3>
+        <div class="ring-wrap">
+          <div class="ring">
+            <svg width="110" height="110"><circle cx="55" cy="55" r="46" fill="none" stroke="rgba(255,255,255,.1)" stroke-width="11"/><circle id="ringFg" cx="55" cy="55" r="46" fill="none" stroke="url(#g1)" stroke-width="11" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"/><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#8b5cf6"/><stop offset=".5" stop-color="#ec4899"/><stop offset="1" stop-color="#fbbf24"/></linearGradient></defs></svg>
+            <div class="ring pct"><div><span id="pathPct">0%</span><small>COMPLETE</small></div></div>
+          </div>
+          <div style="flex:1">
+            <div class="kv"><span> Goal</span><b id="goalName" style="text-align:right;max-width:150px">—</b></div>
+            <div class="kv"><span> Phase</span><b id="phaseName">—</b></div>
+            <div class="kv"><span> Milestones</span><b id="msCount">0/0</b></div>
+          </div>
+        </div>
+        <button class="btn btn-g btn-sm" style="width:100%;margin-top:12px" onclick="go('path')">View full path →</button>
+      </div>
+      <div class="card">
+        <h3> Today's Power</h3>
+        <p class="sub">Finish quests to earn XP, extend your streak and unlock new coach intensities.</p>
+        <div class="kv"><span> Streak</span><b id="streak2">0 days</b></div>
+        <div class="kv"><span> Quests done today</span><b id="questCount">0/0</b></div>
+        <div class="kv"><span> Earned (logged)</span><b id="earnedTop" style="color:var(--txt)">£0</b></div>
+        <div class="kv"><span> Focus time</span><b id="focusTop">0m</b></div>
+      </div>
+    </div>
+
+    <div class="sec-title"><h2> Today's Quests</h2><span id="questHint">tap ✓ to crush them</span></div>
+    <div id="questList"></div>
+
+    <div class="quote" id="quoteBox">“Loading fire…”<b id="quoteBy"></b></div>
+  </div>
+
+  <!-- PATH -->
+  <div class="view" id="v-path">
+    <div class="sec-title"><h2> Your Path to the Goal</h2><span id="pathSub"></span></div>
+    <div class="card"><h3 id="pathGoalTitle"> Your goal</h3><p class="sub" id="pathGoalDesc"></p>
+      <div class="pbar"><i id="pathBar" style="width:0%"></i></div>
+      <p class="sub" style="margin-top:8px" id="pathBarTxt"></p>
+    </div>
+    <div id="phaseList"></div>
+    <button class="btn btn-g btn-sm" style="width:100%;margin-top:14px" id="rebuildBtn"> Rebuild my path</button>
+  </div>
+
+  <!-- FOCUS -->
+  <div class="view" id="v-focus">
+    <div class="sec-title"><h2> Focus Room</h2><span>pomodoro = money + grades</span></div>
+    <div class="timer-card">
+      <div class="tag study" id="timerMode"> DEEP STUDY · 25:00</div>
+      <div class="timer" id="timerTxt">25:00</div>
+      <div class="mode-row">
+        <button class="mode on" data-m="25"> Study 25</button>
+        <button class="mode" data-m="50"> Deep 50</button>
+        <button class="mode" data-m="15"> Money sprint 15</button>
+        <button class="mode" data-m="5"> Break 5</button>
+      </div>
+      <div class="tbtns">
+        <button class="btn btn-green" id="tStart"> Start</button>
+        <button class="btn btn-g" id="tReset">↺ Reset</button>
+      </div>
+      <p class="sub" style="font-size:12px;color:var(--mut);margin-top:12px">Finishing a session = <b style="color:#fde68a">+50 XP</b> + a hype notification </p>
+    </div>
+    <div class="grid2">
+      <div class="card"><h3> Sessions</h3><p class="sub">Completed focus sessions</p><div style="font-size:34px;font-weight:900;margin-top:6px" id="sessCount">0</div></div>
+      <div class="card"><h3> Total focus</h3><p class="sub">Minutes in the zone</p><div style="font-size:34px;font-weight:900;margin-top:6px" id="focusMin">0m</div></div>
+    </div>
+    <div class="sec-title"><h2> Study power tips</h2><span>from your coach</span></div>
+    <div id="studyTips"></div>
+  </div>
+
+  <!-- COACH -->
+  <div class="view" id="v-coach">
+    <div class="coach-heading"><div class="coach-mark">M</div><h2>What are we working on?</h2><p>Honest advice for money, study and the days in between.</p><div class="coach-disclaimer"><span class="live-dot"></span> RULE-BASED COACH · NOT AI</div></div>
+    <div class="card">
+      <div class="chat" id="chat"></div>
+      <div class="quick" id="quickRow">
+        <button class="qr" data-q="motivate"> Motivate me</button>
+        <button class="qr" data-q="money"> Money idea</button>
+        <button class="qr" data-q="study"> Study help</button>
+        <button class="qr" data-q="lazy"> I feel lazy</button>
+        <button class="qr" data-q="plan"> Today's plan</button>
+      </div>
+      <div class="chatbar"><input id="chatIn" aria-label="Message your coach" placeholder="Ask about your goals, money or studying..." maxlength="300"><button class="sendbtn" id="chatSend" aria-label="Send message">→</button></div>
+    </div>
+  </div>
+
+  <!-- VINTED -->
+  <div class="view" id="v-vinted">
+    <div class="page-kicker">RESELLING / ACTIVITY</div>
+    <div class="sec-title"><h2>Vinted tracker<span class="accent-dot">.</span></h2><span>YOUR SALES, YOUR DATA</span></div>
+    <p class="section-intro">Turn the things you already own into progress. Track listings and sales alongside your goals.</p>
+    <div class="vinted-status"><div><span class="status-label"><span class="status-dot"></span> MANUAL TRACKING</span><h3>Your Vinted, in focus.</h3><p>This app cannot connect to your Vinted account or see your activity automatically. Add your listings and sales below; the coach can use what you log. Never enter your Vinted password here.</p></div><a class="btn btn-g" href="https://www.vinted.co.uk/" target="_blank" rel="noopener noreferrer">Open Vinted ↗</a></div>
+    <div class="v-metrics"><div><span>ITEMS TRACKED</span><strong id="vCount">0</strong></div><div><span>ACTIVE LISTINGS</span><strong id="vActive">0</strong></div><div><span>SALES LOGGED</span><strong id="vSales">£0.00</strong></div></div>
+    <div class="v-grid"><div class="card v-form"><div class="card-eyebrow">01 / ADD ACTIVITY</div><h3>Log an item</h3><p class="sub">Keep your pipeline honest. Update the status when it sells.</p><form id="vForm"><label for="vItem">Item name</label><input id="vItem" required maxlength="80" placeholder="e.g. Vintage denim jacket"><div class="row2"><div><label for="vPrice">Price (£)</label><input id="vPrice" type="number" required min="0.01" step="0.01" inputmode="decimal" placeholder="0.00"></div><div><label for="vStatus">Status</label><select id="vStatus"><option value="listed">Listed</option><option value="sold">Sold</option></select></div></div><button class="btn btn-p" type="submit">Add to tracker <span>→</span></button></form><p class="v-note">Sales here are separate from Money Wins, so they are not double-counted.</p></div><div class="card v-list-card"><div class="card-eyebrow">02 / YOUR PIPELINE</div><h3>Recent activity</h3><div id="vList"></div></div></div>
+  </div>
+
+  <!-- WINS -->
+  <div class="view" id="v-wins">
+    <div class="sec-title"><h2> Money Wins</h2><span>log every £ — it compounds</span></div>
+    <div class="card" style="text-align:center">
+      <p class="sub">TOTAL LOGGED</p>
+      <div class="money-big" id="moneyTotal">£0</div>
+      <p class="sub" id="moneyGoalTxt"></p>
+      <div class="bars" id="moneyBars"></div>
+    </div>
+    <div class="card" style="margin-top:12px">
+      <h3> Log a win</h3>
+      <div class="row2">
+        <div><label>Amount (£)</label><input id="winAmt" type="number" min="1" placeholder="e.g. 25"></div>
+        <div><label>From what?</label><input id="winSrc" placeholder="e.g. Sold old PS4 games" maxlength="60"></div>
+      </div>
+      <button class="btn btn-green" style="width:100%;margin-top:12px" id="logWinBtn"> Log it + earn 30 XP</button>
+    </div>
+    <div id="winList"></div>
+
+    <div class="sec-title"><h2> Push notification HQ</h2><span>control the hype firehose</span></div>
+    <div class="card">
+      <div class="set-row"><div> Browser push notifications<small id="permTxt">Browser notifications while this page is open (permission required)</small></div><button class="btn btn-p btn-sm" id="permBtn">Enable</button></div>
+      <div class="set-row"><div> In-app hype toasts<small>Loud popups inside the app — always on</small></div><div class="tgl on" data-s="toasts"></div></div>
+      <div class="set-row"><div> Hype sound<small>Air-horn-ish beep on every push</small></div><div class="tgl on" data-s="sound"></div></div>
+      <div class="set-row"><div> Money motivation<small>Tips, ideas & "go earn" shoves</small></div><div class="tgl on" data-s="money"></div></div>
+      <div class="set-row"><div> Study motivation<small>Focus reminders & exam energy</small></div><div class="tgl on" data-s="study"></div></div>
+      <div class="set-row"><div> Streak protection<small>"Don't break your streak!!" warnings</small></div><div class="tgl on" data-s="streak"></div></div>
+      <div><label>Hype intensity (push frequency)</label>
+        <select id="hypeSel">
+          <option value="chill"> Chill — a nudge every ~2 min</option>
+          <option value="balanced" selected> Balanced — hype every ~45 sec</option>
+          <option value="beast"> BEAST MODE — a nudge every ~20 sec while open</option>
+        </select>
+      </div>
+      <button class="btn btn-p" style="width:100%;margin-top:14px" id="testPushBtn"> Send 5-push hype storm</button>
+      <button class="btn btn-red btn-sm" style="width:100%;margin-top:10px" id="resetBtn"> Reset everything</button>
+    </div>
+    <div class="footer">MOMENTUM Hype Coach · built to make you rich & smart<br>Built for action · <span id="yr"></span></div>
+  </div>
+
+  <div style="height:20px"></div>
+</div>
+
+<nav class="nav" aria-label="Main navigation"><div class="nav-in">
+  <button class="on" data-v="home"><span class="ic">⌂</span><span>HOME</span></button>
+  <button data-v="path"><span class="ic">◇</span><span>PATH</span></button>
+  <button data-v="focus"><span class="ic">◷</span><span>FOCUS</span></button>
+  <button data-v="coach"><span class="ic">▤</span><span>COACH</span></button>
+  <button data-v="vinted"><span class="ic">▥</span><span>VINTED</span></button>
+  <button data-v="wins"><span class="ic">↗</span><span>WINS</span></button>
+</div></nav>
+
+<!-- NOTIF DRAWER -->
+<div class="drawer" id="drawer">
+  <div class="drawer-head"><span style="font-size:22px"></span><h3>Push Center</h3><span style="margin-left:auto"></span><button class="btn btn-g btn-sm" id="clearNotif">Clear</button><button class="btn btn-g btn-sm" id="closeDrawer">✕</button></div>
+  <div style="padding:10px 14px 0"><button class="btn btn-p btn-sm" style="width:100%" id="drawerHype"> Hit me with motivation</button></div>
+  <div class="notif-list" id="notifList"></div>
+</div>
+
+<!-- ONBOARDING -->
+<div class="overlay hidden" id="onboard">
+  <div class="sheet">
+    <div class="tag gold"> MOMENTUM COACH SETUP</div>
+    <h2 id="obTitle">What's your name, future legend?</h2>
+    <p class="d" id="obSub">I'm Blaze — your on-device coach. I build your step-by-step path, and gives reminders while this page is open.</p>
+    <div class="steps" id="obSteps"><i class="on"></i><i></i><i></i><i></i></div>
+    <div id="obBody"></div>
+    <div style="display:flex;gap:10px;margin-top:18px">
+      <button class="btn btn-g" id="obBack" style="flex:1">← Back</button>
+      <button class="btn btn-p" id="obNext" style="flex:2">Continue →</button>
+    </div>
+  </div>
+</div>
+
+<div id="toasts"></div>
+
+<script>
+/* ============ STATE ============ */
+const KEY='momentum_v1';
+let S=null;
+const $=id=>document.getElementById(id);
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function blank(){return{name:'',focus:'both',goal:'',moneyTarget:500,targetDate:'',intensity:'normal',hype:'balanced',
+ xp:0,streak:0,lastDay:'',path:null,quests:[],questDay:'',wins:[],sessions:0,focusMin:0,notifs:[],unread:0,
+ settings:{toasts:true,sound:true,money:true,study:true,streak:true},chat:[],doneIntro:false};}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function load(){try{const r=localStorage.getItem(KEY);if(r){S=JSON.parse(r);return;}}catch(e){} S=blank();}
+
+/* ============ CONTENT BANKS ============ */
+const MONEY_HYPE=[
+ [" Money check!","{name}, your future rich self is watching. Do ONE money move in the next 10 minutes — list something, message a client, learn a skill. GO."],
+ [" £1 is proof","You don't need a perfect plan, you need a first sale. Small wins stack into empires. What's your ONE move today?"],
+ [" Broke is temporary","Every rich person was once exactly where you are. The difference? They started ugly. Start ugly today."],
+ [" Idea spark","Quick cash ideas: flip stuff on Vinted/eBay, offer car washing, edit TikToks for a local shop, sell notes, do gardening. Pick ONE."],
+ [" Compound effect","£20/day side hustle = £600/month = £7,200/year. That's life-changing from a phone. Start the streak today."],
+ [" Boss mindset","Nobody is coming to save you financially — that's GOOD news. It means YOU get all the credit. Make a move."],
+ [" Phone = ATM","Your phone made someone rich today. Was it you or someone else? 30 mins of focused hustle. Now."],
+ [" Skill = money","Learn: video editing, copywriting, AI tools, sales. 1 hour/day for 90 days = hireable. Your Day 1 can be today."],
+ [" Future you says thanks","Imagine checking your bank in 6 months because you started TODAY. Don't rob future {name} of that moment."],
+ [" No zero days","Even £1 earned or 1 lesson learned counts. Zero days are banned from today. Move something forward."]
+];
+const STUDY_HYPE=[
+ [" Brain gains incoming","{name}, 25 focused minutes beats 3 distracted hours. Timer on. Phone face-down. Future A-grade you is waiting."],
+ [" Recall > re-read","Close the book. Write what you remember. That struggle IS learning. Active recall now — thank yourself in the exam."],
+ [" Exam revenge arc","Someone doubts you? Good. Let your results be the reply. One more chapter. One more past paper. GO."],
+ [" Just 5 minutes","Tell your brain 'only 5 minutes'. Starting is the whole battle — momentum does the rest. Start now."],
+ [" Past papers = cheat code","Top students don't just revise — they TEST themselves. Do 5 exam questions right now. Mark harshly. Fix gaps."],
+ [" Distraction audit","Every scroll is a loan from your future grades — with interest. 1 hour of deep focus. You can do anything for 1 hour."],
+ [" Sleep = study hack","Revise before sleep, review after waking. Your brain consolidates overnight. But first — one solid session NOW."],
+ [" Consistency wins","You don't need motivation, you need a streak. Same time, same desk, every day. Protect the streak ."],
+ [" Teach it","If you can't explain it simply, you don't know it yet. Teach today's topic to an imaginary 10-year-old."],
+ [" Deep work mode","One subject. One desk. One timer. No tabs, no music with lyrics. Enter the zone for 25 minutes. GO GO GO."]
+];
+const MIND_HYPE=[
+ [" REMINDER","{name}, you said you wanted MORE. More money. Better grades. This is the part where you prove it. 10 minutes of action. NOW."],
+ [" Check-in","When you are ready, open your quests and choose one small action."],
+ [" Discipline > motivation","Motivation is weather. Discipline is climate. Be the climate. Do the next quest even if you don't feel like it."],
+ [" Streak alert","Your {streak}-day streak is precious. Champions protect streaks on LAZY days, not easy days. Don't break it."],
+ [" Hard > easy","Easy choices = hard life. Hard choices = easy life. Pick hard for the next 30 minutes. Future you will flex."],
+ [" Hungry?","Lions don't wait to feel ready. They HUNT. One quest. One session. One sale attempt. Hunt something today."],
+ [" Accountability check","Quick honesty check 1-10: how hard did you push today? If under 7, you owe yourself one more push. NOW."]
+];
+const QUOTES=[
+ ["Whether you think you can or you think you can't — you're right.","Henry Ford"],
+ ["Discipline is choosing what you want most over what you want now.","Abraham Lincoln"],
+ ["You don't have to be great to start, but you have to start to be great.","Zig Ziglar"],
+ ["Success is the sum of small efforts repeated day in and day out.","Robert Collier"],
+ ["Don't watch the clock; do what it does. Keep going.","Sam Levenson"],
+ ["The expert in anything was once a beginner.","Helen Hayes"],
+ ["Push yourself, because no one else is going to do it for you.","[Unknown]"],
+ ["Your bank account and your grades both respond to the same thing: daily discipline.","Coach"],
+ ["Dream big. Start small. Act now.","Robin Sharma"],
+ ["A year from now you'll wish you started today.","Karen Lamb"]
+];
+const STUDY_TIPS=[
+ [" Active recall","After reading a page, close it and write everything you remember. 2x retention vs re-reading."],
+ [" Pomodoro 25/5","25 min focus + 5 min break × 4, then a long break. Your brain loves sprints, not marathons."],
+ [" Past papers weekly","Do timed past papers every week. Mark them brutally. Exams reward exam-skills, not just knowledge."],
+ [" Spaced repetition","Review Day 1 → Day 3 → Day 7 → Day 14. Apps or flashcards. Never cram-and-forget again."],
+ [" Phone jail","Put your phone in another room during focus. Out of sight = out of mind = A's."],
+ [" Lyric-free sound","Lo-fi or white noise > songs with lyrics. Lyrics fight your inner voice for attention."]
+];
+
+/* ============ PATH BUILDER ============ */
+function buildPath(){
+  const f=S.focus, g=S.goal||'my goal', mt=S.moneyTarget||500;
+  const P={created:todayStr(),phases:[]};
+  const moneyPh=[
+   {t:" IGNITE — Days 1–7",d:"Foundation: pick your lane & make the first move.",ms:[
+     {t:"Pick ONE money lane",d:"Freelancing, flipping, content, or a local service. One lane for 30 days beats ten lanes for 3 days.",tasks:["Write down 3 skills/things you own that could make money","Pick ONE lane & write why in one sentence","Tell one person your plan (accountability)"]},
+     {t:"Set up your money HQ",d:"You need somewhere money can land and a way to track it.",tasks:["Create a separate savings pot/space for hustle money","Set your target: £"+mt+" by "+(S.targetDate||"your date"),"Log your first entry in Money Wins (even £0 — start the habit)"]},
+     {t:"Learn the 20% that earns 80%",d:"3 hours of targeted learning beats 30 hours of random YouTube.",tasks:["Find 1 free crash course in your lane (YouTube/Skillshare)","Take 1 page of notes: 'how do people actually get paid here?'","List 10 people/businesses who might pay for this"]}]},
+   {t:" LAUNCH — Days 8–21",d:"Offer live. First outreach. First pounds.",ms:[
+     {t:"Create a dead-simple offer",d:"One sentence: I help X get Y for £Z.",tasks:["Write your one-sentence offer","Set 3 prices: starter / standard / premium","Post your offer somewhere (status, group, flyer)"]},
+     {t:"Outreach blitz: 25 contacts",d:"Money hides behind conversations. Start 25 of them.",tasks:["Message 5 people about your offer","Post in 3 local/online groups","Follow up everyone who replied within 24h"]},
+     {t:"Deliver & collect proof",d:"Over-deliver on the first jobs, even cheap ones.",tasks:["Complete first paid (or trial) job excellently","Ask for a review/screenshot testimonial","Log every £ in Money Wins"]}]},
+   {t:" EARN — Days 22–45",d:"Repeatable income. Raise prices. Systemise.",ms:[
+     {t:"Hit 25% of target (£"+Math.round(mt*0.25)+")",d:"Momentum milestone — prove the machine works.",tasks:["Review what brought the most £ — double down on it","Raise prices 10–20% for new clients","Save 20% of everything earned"]},
+     {t:"Build a tiny content engine",d:"Post proof of work 3x/week. Attention becomes income.",tasks:["Post 3x this week: result / lesson / offer","Reply to every comment & DM fast","Ask 2 happy clients for referrals"]},
+     {t:"Systemise the grind",d:"Checklists and templates = more output, less effort.",tasks:["Write your delivery checklist","Create message templates (pitch, follow-up, invoice)","Block 1 daily 'money hour' in your routine"]}]},
+   {t:" SCALE — Days 46–90",d:"Push to £"+mt+" and beyond. Think bigger.",ms:[
+     {t:"Hit 60% of target (£"+Math.round(mt*0.6)+")",d:"You're officially not a beginner anymore.",tasks:["Launch a premium/bundle offer","Spend 2h/week learning higher-value skills","Track weekly income — beat last week"]},
+     {t:"Scale what works",d:"More of the winners, zero of the losers.",tasks:["Cut the lowest-£ activity completely","Find 1 way to get recurring (not one-off) income","Teach someone else — it cements your skill"]},
+     {t:"Hit £"+mt+" ",d:"Goal smashed. Set the next one immediately.",tasks:["Celebrate (cheaply!) then set a 2x goal","Write your 'how I did it' story — post it","Keep the streak: never miss the money hour twice"]}]}];
+  const studyPh=[
+   {t:" RESET — Days 1–7",d:"Audit, organise, and rebuild study habits.",ms:[
+     {t:"Audit everything",d:"You can't fix what you can't see.",tasks:["List every subject + current grade + target grade","Find your exam dates & syllabus for each subject","Rate each topic  (red = urgent)"]},
+     {t:"Build your study HQ",d:"Environment beats willpower.",tasks:["Clear & set up ONE study spot","Gather: past papers, flashcards, timer, water","Install a focus/blocking routine (phone jail!)"]},
+     {t:"Start the daily streak",d:"Small daily beats massive rare.",tasks:["Complete 2× 25-min sessions daily this week","Log every session in Focus Room","No zero days — even 15 mins counts"]}]},
+   {t:" GRIND — Days 8–21",d:"Attack red topics with active recall.",ms:[
+     {t:"Kill your weakest topic",d:"Biggest red  first. That's where grades hide.",tasks:["Pick your #1 weakest topic","Study it with active recall 3 days in a row","Teach it out loud — record yourself"]},
+     {t:"Past paper protocol",d:"Exam skills are trained, not hoped for.",tasks:["Do 1 timed past paper per subject","Mark harshly using the mark scheme","Make flashcards from every lost mark"]},
+     {t:"Fix your system",d:"Review what's working after 2 weeks.",tasks:["Review streak + focus minutes honestly","Double the technique that helped most","Cut one distraction completely"]}]},
+   {t:" MASTERY — Days 22–45",d:"Depth, speed, and consistency.",ms:[
+     {t:"Turn yellows to greens",d:"Systematically upgrade every  topic.",tasks:["Schedule each  topic across 2 weeks","Blurting: blank-page brain dumps weekly","Get feedback: teacher/tutor/friend check"]},
+     {t:"Exam-condition training",d:"Train harder than the real thing.",tasks:["Weekly full timed papers under exam rules","Build model answers for repeat questions","Drill your 20 most-forgotten facts daily"]},
+     {t:"Protect the machine",d:"Sleep, food, movement = brain fuel.",tasks:["Fix sleep: same bedtime 7 nights","20-min walk/exercise 4x this week","One full rest evening per week (guilt-free)"]}]},
+   {t:" EXAM READY — Days 46+",d:"Peak, revise smart, walk in confident.",ms:[
+     {t:"Consolidation sprint",d:"Less new stuff, more retrieval.",tasks:["Daily mixed flashcard reviews (all subjects)","Re-do your worst past paper — beat the score","One-page summary per topic from memory"]},
+     {t:"Final countdown plan",d:"Know exactly what happens each remaining day.",tasks:["Write your day-by-day countdown plan","Prepare exam kit (pens, ID, water, snacks)","Visualise walking in calm & ready (seriously, it works)"]},
+     {t:"Smash '"+(g.length>34?g.slice(0,34)+"…":g)+"' ",d:"Show up and show out.",tasks:["Execute the plan — trust your training","Log results & celebrate properly","Set the NEXT academic goal immediately"]}]}];
+  if(f==='money')P.phases=moneyPh; else if(f==='study')P.phases=studyPh;
+  else{P.phases=[
+    {t:" IGNITE — Days 1–7",d:"Money lane picked + study HQ built. Double threat loading.",ms:[moneyPh[0].ms[0],studyPh[0].ms[1],{t:"Start BOTH streaks",d:"Money hour + study sessions, daily.",tasks:["1× 25-min study session daily","30-min money hour daily","Log wins & sessions every night"]}]},
+    {t:" LAUNCH — Days 8–21",d:"First £ moves + weakest study topics attacked.",ms:[moneyPh[1].ms[0],studyPh[1].ms[0],studyPh[1].ms[1]]},
+    {t:" EARN & LEARN — Days 22–45",d:"Income repeats while grades climb.",ms:[moneyPh[2].ms[0],moneyPh[2].ms[1],studyPh[2].ms[0]]},
+    {t:" RICH & SMART — Days 46–90",d:"Scale income, lock in top grades.",ms:[moneyPh[3].ms[0],studyPh[2].ms[1],{t:"Smash '"+(g.length>30?g.slice(0,30)+"…":g)+"' ",d:"Both goals. One legend.",tasks:["Hit £"+mt+" money target","Hit every subject target grade","Set 2x goals & keep both streaks"]}]}];}
+  P.phases.forEach((p,pi)=>{p.id='p'+pi;p.ms.forEach((m,mi)=>{m.id='p'+pi+'m'+mi;m.done=false;m.tasks=m.tasks.map((t,ti)=>({id:'p'+pi+'m'+mi+'t'+ti,txt:t,done:false}));});});
+  S.path=P;save();
+}
+
+/* ============ DAILY QUESTS ============ */
+function questPool(){
+  const money=[[" List 1 thing for sale","Vinted, eBay, Facebook — photo, price, post. 15 mins.",30],[" Send 5 hustle messages","Pitch your offer to 5 people or businesses.",40],[" Learn 1 money skill lesson","One video + one page of notes. Apply it today.",25],[" Track your numbers","Log income/expenses. What gets measured grows.",20],[" Help someone free (strategically)","Free value → testimonial → paid work pipeline.",25]];
+  const study=[[" 2× 25-min deep sessions","Phone in jail. Timer on. Full focus.",40],[" Active recall drill","Blank page: dump everything on today's topic.",30],[" 5 past-paper questions","Timed. Marked harshly. Gaps → flashcards.",35],[" Review flashcards","Spaced repetition: clear today's due cards.",20],[" Teach-back","Explain one topic aloud like you're the teacher.",25]];
+  const mind=[[" No-zero-day check-in","Open the app, review path, plan tomorrow. 5 mins.",15],[" Body reset","20-min walk + water + tidy desk. Brain fuel.",15],[" Gratitude + goal read","Read your goal aloud. Visualise it done. 3 mins.",15]];
+  if(S.focus==='money')return[...money,...money.slice(0,2),...mind.slice(0,1)];
+  if(S.focus==='study')return[...study,...study.slice(0,2),...mind.slice(0,1)];
+  return[money[0],money[1],study[0],study[2],mind[0],study[1]];
+}
+function ensureQuests(){
+  const t=todayStr();
+  if(S.questDay!==t){
+    const pool=questPool();
+    S.quests=pool.slice(0,6).map((q,i)=>({id:'q'+t+'-'+i,title:q[0],desc:q[1],xp:q[2],done:false}));
+    S.questDay=t;
+    if(S.lastDay!==t){ // streak check
+      const y=new Date(Date.now()-864e5).toISOString().slice(0,10);
+      if(S.lastDay===y||S.lastDay==='')S.streak=(S.streak||0)+ (S.doneIntro?1:0);
+      else if(S.lastDay!==''&&S.lastDay!==t)S.streak=1;
+      S.lastDay=t;
+    }
+    save();
+  }
+}
+
+/* ============ XP / LEVEL ============ */
+const lvl=xp=>Math.floor(xp/300)+1;
+const lvlProg=xp=>(xp%300)/300*100;
+function addXP(n,why){
+  S.xp+=n;save();renderTop();
+  burst();
+  push(' +'+n+' XP — '+(why||'progress!'),pick(["Keep stacking. Levels don't lie. ","That's the discipline talking. ","Small XP, massive future. Keep going!","Coach is proud. Now do the next one. "]),'mind',true);
+}
+
+/* ============ NOTIFICATION ENGINE ============ */
+function pick(a){return a[Math.floor(Math.random()*a.length)];}
+function fill(s){return s.replace('{name}',S.name||'champ').replace('{streak}',S.streak||0);}
+let audioCtx=null;
+function beep(){if(!S.settings.sound)return;try{audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.connect(g);g.connect(audioCtx.destination);o.frequency.setValueAtTime(880,audioCtx.currentTime);o.frequency.setValueAtTime(1320,audioCtx.currentTime+.12);g.gain.setValueAtTime(.18,audioCtx.currentTime);g.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.4);o.start();o.stop(audioCtx.currentTime+.4);}catch(e){}}
+function sysPush(title,body){
+  title=title.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu,'');body=body.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu,'');
+  try{
+    if('Notification' in window&&Notification.permission==='granted'){
+      const n=new Notification(' '+title,{body,tag:'mom'+Date.now()});
+      setTimeout(()=>n.close(),6000);
+    }
+  }catch(e){}
+}
+function push(title,body,cat='mind',silent=false){
+  const item={id:Date.now()+Math.random(),title,body,cat,time:new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),unread:true};
+  S.notifs.unshift(item);S.notifs=S.notifs.slice(0,60);S.unread=(S.unread||0)+1;save();renderNotifs();
+  if(S.settings.toasts)toast(title,body,cat);
+  if(!silent)beep();
+  sysPush(title,body);
+}
+function toast(title,body,cat){
+  const t=document.createElement('div');t.className='toast';
+  const ic=cat==='money'?'':cat==='study'?'':'';
+  t.innerHTML=`<b>${ic} ${esc(title)}</b><p>${esc(body)}</p>`;
+  t.onclick=()=>{openDrawer();dismiss();};
+  $('toasts').appendChild(t);
+  const dismiss=()=>{t.classList.add('out');setTimeout(()=>t.remove(),300);};
+  setTimeout(dismiss,6500);
+}
+function hypePush(){
+  const opts=[];
+  if(S.settings.money)opts.push(...MONEY_HYPE.map(m=>[...m,'money']));
+  if(S.settings.study)opts.push(...STUDY_HYPE.map(m=>[...m,'study']));
+  opts.push(...MIND_HYPE.map(m=>[...m,'mind']));
+  if(S.settings.streak&&S.streak>0&&Math.random()<.25){push(' STREAK PROTECTION',`Your ${S.streak}-day streak survived this long — don't let TODAY be the day it dies. One quest. Now.`,'mind');return;}
+  const h=pick(opts);push(fill(h[0]),fill(h[1]),h[2]);
+}
+const HYPE_MS={chill:120000,balanced:45000,beast:20000};
+let hypeTimer=null,idleTimer=null,lastActive=Date.now();
+function startHype(){
+  clearInterval(hypeTimer);
+  hypeTimer=setInterval(()=>{hypePush();},HYPE_MS[S.hype]||45000);
+  clearInterval(idleTimer);
+  idleTimer=setInterval(()=>{ // idle nudge every 3 min of no taps
+    if(Date.now()-lastActive>180000){push(' Time for a check-in',fill(pick(["{name}, 3 minutes idle. Your competition just did a rep. Your move.","Still there? Goals don't chase themselves — one quest, let's go.","Idle hands, empty bank. 10-minute sprint. NOW."])) ,'mind');lastActive=Date.now();}
+  },60000);
+}
+['click','touchstart','keydown'].forEach(e=>document.addEventListener(e,()=>{lastActive=Date.now();},{passive:true}));
+
+/* ============ RENDER ============ */
+function renderTop(){
+  $('streak').textContent=S.streak||0;$('xpTop').textContent=S.xp||0;
+  $('lvlTop').textContent='LVL '+lvl(S.xp||0);$('lvlText').textContent='Level '+lvl(S.xp||0);
+  $('xpText').textContent=(S.xp||0)+' XP';$('xpFill').style.width=lvlProg(S.xp||0)+'%';
+  const hour=new Date().getHours();
+  $('coachState').textContent=hour<5?'ACTIVE':hour<12?'ACTIVE':hour<18?'ACTIVE':'ACTIVE';
+  const b=$('bellBadge');b.textContent=S.unread||0;b.classList.toggle('hidden',!(S.unread>0));
+}
+function pathStats(){
+  if(!S.path)return{pct:0,done:0,total:0,phase:'—'};
+  let done=0,total=0,cur='—';
+  S.path.phases.forEach(p=>{let pd=0;p.ms.forEach(m=>{total++;const d=m.tasks.every(t=>t.done);if(d){done++;m.done=true;}else{m.done=false;if(cur==='—')cur=p.t.split('—')[0].trim();}pd+=d?1:0;});p.open=p.open||(pd<p.ms.length&&cur!=='—'&&S.path.phases.indexOf(p)===S.path.phases.findIndex(pp=>pp.ms.some(m=>!m.done)));});
+  if(done===total&&total>0)cur=' COMPLETE';
+  return{pct:total?Math.round(done/total*100):0,done,total,phase:cur};
+}
+function renderHome(){
+  const d=new Date().toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+  $('dateTag').textContent=' '+d.toUpperCase();
+  const h=new Date().getHours(),nm=S.name||'champ';
+  const g=h<12?'Good morning':h<18?'Good afternoon':'Good evening';
+  $('greet').innerHTML=`${g}, ${esc(nm)}.<br>Make it <span class="hl">count.</span>`;
+  $('heroSub').textContent=S.goal?('THE MISSION: '+S.goal):'A clear plan. Daily action. No waiting for the perfect moment.';
+  $('goalName').textContent=(S.goal||'—').slice(0,26);
+  const st=pathStats();
+  $('pathPct').textContent=st.pct+'%';
+  $('ringFg').style.strokeDashoffset=289-(289*st.pct/100);
+  $('phaseName').textContent=st.phase.slice(0,22);$('msCount').textContent=st.done+'/'+st.total;
+  const qd=S.quests.filter(q=>q.done).length;
+  $('questCount').textContent=qd+'/'+S.quests.length;
+  $('streak2').textContent=(S.streak||0)+' days';
+  $('earnedTop').textContent='£'+S.wins.reduce((a,w)=>a+ +w.amt,0);
+  $('focusTop').textContent=(S.focusMin||0)+'m';
+  const q=pick(QUOTES);$('quoteBox').childNodes[0].textContent='“'+q[0]+'” ';$('quoteBy').textContent='— '+q[1];
+  // quests
+  const ql=$('questList');ql.innerHTML='';
+  S.quests.forEach(q=>{
+    const tag=/sale|hustle|money|numbers|messages/i.test(q.title)?'<span class="tag money">MONEY</span>':/check-in|reset|gratitude/i.test(q.title)?'<span class="tag mind">MIND</span>':'<span class="tag study">STUDY</span>';
+    const el=document.createElement('div');el.className='quest'+(q.done?' done':'');
+    el.innerHTML=`<div class="check ${q.done?'on':''}">${q.done?'✓':''}</div><div style="flex:1"><div class="q-title">${esc(q.title)}</div><div class="q-meta">${tag}<span>${esc(q.desc)}</span><span class="xp-chip">+${q.xp} XP</span></div></div>`;
+    el.querySelector('.check').onclick=()=>toggleQuest(q.id);
+    ql.appendChild(el);
+  });
+}
+function toggleQuest(id){
+  const q=S.quests.find(x=>x.id===id);if(!q||q.done)return;
+  q.done=true;save();renderHome();renderTop();
+  addXP(q.xp,'Quest crushed: '+q.title);
+  if(S.quests.every(x=>x.done)){bigBurst();push(' PERFECT DAY',fill('{name}!! ALL quests crushed. This is what legends are made of. Screenshot this day.'),'mind');}
+}
+function renderPath(){
+  if(!S.path)return;
+  $('pathGoalTitle').textContent=' '+ (S.goal||'Your goal');
+  const fTxt=S.focus==='money'?' Money track':S.focus==='study'?' Study track':' Money + Study track';
+  $('pathGoalDesc').textContent=`${fTxt} · Target ${S.focus!=='study'?'£'+(S.moneyTarget||500)+' ':''}${S.targetDate?'· by '+S.targetDate:''} · Tap a phase to expand, tap tasks to tick them.`;
+  const st=pathStats();
+  $('pathSub').textContent=st.done+'/'+st.total+' milestones';
+  $('pathBar').style.width=st.pct+'%';$('pathBarTxt').textContent=st.pct+'% complete — '+(st.pct===100?'PATH COMPLETE. You absolute legend.  Rebuild for the next level.':'keep ticking tasks, every tick = XP.');
+  const pl=$('phaseList');pl.innerHTML='';
+  const cols=[['#8b5cf6,#ec4899'],['#22d3ee,#8b5cf6'],['#22c55e,#22d3ee'],['#f59e0b,#ec4899']];
+  S.path.phases.forEach((p,pi)=>{
+    const pd=p.ms.filter(m=>m.done).length;
+    const el=document.createElement('div');el.className='phase'+(p.open||pi===0?' open':'');
+    el.innerHTML=`<div class="phase-head"><div class="phase-num" style="background:linear-gradient(135deg,${cols[pi%4]});">${['①','②','③','④'][pi]||'★'}</div><div><h4>${esc(p.t)}</h4><p>${esc(p.d)}</p></div><div class="chev">▼</div></div><div class="phase-body"><div class="pbar"><i style="width:${Math.round(pd/p.ms.length*100)}%"></i></div><p style="font-size:11.5px;color:var(--mut);margin-top:6px">${pd}/${p.ms.length} milestones · ${Math.round(pd/p.ms.length*100)}%</p></div>`;
+    el.querySelector('.phase-head').onclick=()=>{p.open=!el.classList.contains('open');el.classList.toggle('open');save();};
+    const body=el.querySelector('.phase-body');
+    p.ms.forEach(m=>{
+      const td=m.tasks.filter(t=>t.done).length;
+      const mEl=document.createElement('div');mEl.className='ms';
+      mEl.innerHTML=`<div class="ms-top"><span style="font-size:18px">${m.done?'':''}</span><div><b>${esc(m.t)}</b><small>${esc(m.d)}</small></div></div><div class="ms-tasks"></div><div class="pbar"><i style="width:${Math.round(td/m.tasks.length*100)}%"></i></div>`;
+      const tk=mEl.querySelector('.ms-tasks');
+      m.tasks.forEach(t=>{
+        const r=document.createElement('div');r.className='mtask'+(t.done?' done':'');
+        r.innerHTML=`<div class="dot">${t.done?'✓':''}</div><div class="mt">${esc(t.txt)}</div>`;
+        r.onclick=()=>{t.done=!t.done;if(t.done)addXP(10,'Path task ticked');else{save();}renderPath();renderHome();renderTop();};
+        tk.appendChild(r);
+      });
+      body.appendChild(mEl);
+    });
+    pl.appendChild(el);
+  });
+}
+function renderFocus(){
+  $('sessCount').textContent=S.sessions||0;$('focusMin').textContent=(S.focusMin||0)+'m';
+  const st=$('studyTips');st.innerHTML='';
+  STUDY_TIPS.forEach(t=>{const d=document.createElement('div');d.className='quest';d.innerHTML=`<div style="font-size:22px"></div><div><div class="q-title">${esc(t[0])}</div><div class="q-meta"><span>${esc(t[1])}</span></div></div>`;st.appendChild(d);});
+}
+function renderWins(){
+  const tot=S.wins.reduce((a,w)=>a+ +w.amt,0);
+  $('moneyTotal').textContent='£'+tot;
+  $('moneyGoalTxt').textContent=S.focus!=='study'?`Goal: £${S.moneyTarget||500} — ${Math.min(100,Math.round(tot/(S.moneyTarget||500)*100))}% there. Keep stacking!`:'Log every pound you earn or save. Watching it grow is addictive.';
+  const bars=$('moneyBars');bars.innerHTML='';
+  const last=S.wins.slice(0,8).reverse();
+  const mx=Math.max(...last.map(w=> +w.amt),1);
+  if(!last.length)bars.innerHTML='<p style="font-size:12px;color:var(--mut);margin:auto">No wins yet — log your first £ below </p>';
+  last.forEach(w=>{const b=document.createElement('div');b.className='bar';b.style.height=Math.max(8, +w.amt/mx*88)+'%';b.innerHTML=`<span>£${w.amt}</span>`;bars.appendChild(b);});
+  const wl=$('winList');wl.innerHTML='<div class="sec-title"><h2> Win history</h2><span>'+S.wins.length+' wins</span></div>';
+  if(!S.wins.length)wl.innerHTML+='<div class="card"><p class="sub">Nothing logged yet. Sold something? Got paid? Saved cash? Log it — your coach will lose its mind celebrating. </p></div>';
+  S.wins.forEach((w,i)=>{const d=document.createElement('div');d.className='win-item';d.innerHTML=`<span style="font-size:20px"></span><div style="flex:1"><b>+£${esc(w.amt)}</b> · ${esc(w.src)}<br><small style="color:var(--mut)">${esc(w.day)}</small></div><button class="btn btn-red btn-sm" data-i="${i}">✕</button>`;d.querySelector('button').onclick=e=>{e.stopPropagation();S.wins.splice(i,1);save();renderWins();renderHome();};wl.appendChild(d);});
+}
+function renderNotifs(){
+  const l=$('notifList');l.innerHTML='';
+  if(!S.notifs.length)l.innerHTML='<div class="card"><p class="sub">No pushes yet. Tap “Hit me with motivation” — your coach is LOADED with hype. </p></div>';
+  S.notifs.forEach(n=>{const d=document.createElement('div');d.className='notif'+(n.unread?' unread':'');d.innerHTML=`<b>${n.cat==='money'?'':n.cat==='study'?'':''} ${esc(n.title)}</b><p>${esc(n.body)}</p><small>${esc(n.time)} · tap to mark read</small>`;d.onclick=()=>{n.unread=false;S.unread=Math.max(0,(S.unread||1)-1);save();renderNotifs();renderTop();};l.appendChild(d);});
+  const b=$('bellBadge');b.textContent=S.unread||0;b.classList.toggle('hidden',!(S.unread>0));
+}
+function renderAll(){renderTop();renderHome();renderPath();renderFocus();renderWins();renderNotifs();renderChat();}
+
+/* ============ TIMER ============ */
+let T={len:25*60,left:25*60,on:false,int:null};
+function fmt(s){return String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0');}
+function drawT(){$('timerTxt').textContent=fmt(T.left);}
+document.querySelectorAll('.mode').forEach(m=>m.onclick=()=>{document.querySelectorAll('.mode').forEach(x=>x.classList.remove('on'));m.classList.add('on');clearInterval(T.int);T.on=false;$('tStart').textContent=' Start';T.len=+m.dataset.m*60;T.left=T.len;drawT();$('timerMode').textContent=m.textContent.toUpperCase()+' · '+fmt(T.len);});
+$('tStart').onclick=()=>{
+  if(T.on){clearInterval(T.int);T.on=false;$('tStart').textContent=' Resume';return;}
+  T.on=true;$('tStart').textContent=' Pause';
+  push(' Focus session started','Timer is running. Phone down, world off. Show this session who\'s boss.','study',true);
+  T.int=setInterval(()=>{T.left--;drawT();if(T.left<=0){clearInterval(T.int);T.on=false;$('tStart').textContent=' Start';T.left=T.len;drawT();S.sessions=(S.sessions||0)+1;S.focusMin=(S.focusMin||0)+Math.round(T.len/60);save();renderFocus();renderHome();bigBurst();addXP(50,'Focus session complete');push(' SESSION CRUSHED','You just banked '+Math.round(T.len/60)+' focused minutes. That\'s how A-grades and bank accounts are built.','study');}},1000);
+};
+$('tReset').onclick=()=>{clearInterval(T.int);T.on=false;T.left=T.len;$('tStart').textContent=' Start';drawT();};
+
+/* ============ COACH CHAT ============ */
+function coachReply(txt){
+  const t=txt.toLowerCase(), name=S.name||'you';
+  const done=S.quests.filter(q=>q.done).length, open=S.quests.filter(q=>!q.done);
+  const items=S.vinted||[], active=items.filter(i=>i.status==='listed').length, sold=items.filter(i=>i.status==='sold').length;
+  if(/suicid|kill myself|self.harm|hurt myself/.test(t)) return 'I am sorry you are dealing with this. Your safety matters more than any goal. Please contact someone you trust now. If you may act on these thoughts or are in immediate danger, call 999 in the UK. You can also call Samaritans free on 116 123.';
+  if(/tired|burnt|burnout|exhaust|overwhelm|depress|anxious/.test(t)) return 'Stop. Rest is not failure, and exhaustion is not a strategy. Take a break, get some water, and choose one small task when you are ready. If this keeps feeling unmanageable, speak to someone you trust.';
+  if(/vinted|sell|sold|listing|sale/.test(t)) return `Your tracker shows ${active} active listing${active===1?'':'s'} and ${sold} sold item${sold===1?'':'s'}. ${sold?'A sale is evidence you followed through. Good work. ':''}Next move: improve one photo, check a comparable price, or list one item. Log the change in Vinted tracker. I only know what you enter here.`;
+  if(/done|finished|completed|made|achieved|passed|win|progress/.test(t)) return `Good. You did the work, and that deserves credit. ${done} of ${S.quests.length} daily actions are checked off. Take a moment to recognise it, then choose the next meaningful step.`;
+  if(/study|exam|revision|school|homework|gcse|focus/.test(t)) return 'The topic will not learn itself. Choose one weak area, set a 25-minute timer, then answer five questions without your notes. Mark the gaps. That is real progress. What topic are you working on?';
+  if(/money|earn|cash|rich|business|hustle/.test(t)) return 'Want more money? Start with a measurable move, not another plan. Pick one item you own, photograph it clearly, research a fair price and list it. No promised returns. Report back when it is done.';
+  if(/plan|today|quest|what.*do/.test(t)) return open.length?`Here is the situation: ${done} of ${S.quests.length} actions done. Your next move is: ${open[0].title}. Start for ten minutes. No perfect conditions required.`:'All daily actions complete. That is execution, not talk. Well done. Rest or choose one extra action deliberately.';
+  if(/lazy|can't|cant|give up|quit|motivat|stuck/.test(t)) return `The goal will not move on intention alone, ${name}. Make the next action small enough to start: five minutes, one question, or one listing. Start there. I will give you credit for showing up.`;
+  return `Straight answer: progress needs a next action. Your goal is ${S.goal||'not set yet'}; you have completed ${done} of ${S.quests.length} daily actions. Tell me whether you need a study plan, a money move, or a Vinted check-in.`;
+}
+function renderChat(){
+  const c=$('chat');c.innerHTML='';
+  S.chat.slice(-30).forEach(m=>{const d=document.createElement('div');d.className='msg '+(m.me?'me':'bot');d.textContent=m.txt;c.appendChild(d);});
+  c.scrollTop=c.scrollHeight;
+}
+function sendChat(txt){
+  if(!txt.trim())return;
+  S.chat.push({me:true,txt:txt.slice(0,300)});save();renderChat();$('chatIn').value='';
+  const c=$('chat');const tp=document.createElement('div');tp.className='msg bot typing';tp.textContent='Blaze is typing…';c.appendChild(tp);c.scrollTop=c.scrollHeight;
+  setTimeout(()=>{tp.remove();S.chat.push({me:false,txt:coachReply(txt)});save();renderChat();},700+Math.random()*700);
+}
+$('chatSend').onclick=()=>sendChat($('chatIn').value);
+$('chatIn').addEventListener('keydown',e=>{if(e.key==='Enter')sendChat($('chatIn').value);});
+document.querySelectorAll('.qr').forEach(b=>b.onclick=()=>{const m={motivate:'Motivate me coach, I need fire',money:'How do I make money fast?',study:'Help me study better',lazy:'I feel lazy and want to quit',plan:'What should I do today?'};sendChat(m[b.dataset.q]);});
+
+/* ============ NAV / DRAWER ============ */
+function go(v){document.querySelectorAll('.view').forEach(x=>x.classList.remove('active'));$('v-'+v).classList.add('active');document.querySelectorAll('.nav button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));window.scrollTo({top:0,behavior:'smooth'});}
+document.querySelectorAll('.nav button').forEach(b=>b.onclick=()=>go(b.dataset.v));
+function openDrawer(){$('drawer').classList.add('open');}
+$('bellBtn').onclick=()=>{openDrawer();};
+$('closeDrawer').onclick=()=>$('drawer').classList.remove('open');
+$('clearNotif').onclick=()=>{S.notifs=[];S.unread=0;save();renderNotifs();};
+$('pushNowBtn').onclick=()=>hypePush();
+$('drawerHype').onclick=()=>hypePush();
+$('testPushBtn').onclick=()=>{const msgs=['storm1','storm2','storm3','storm4','storm5'];msgs.forEach((m,i)=>setTimeout(()=>hypePush(),i*1200));toast(' HYPE STORM INCOMING','5 motivation bombs landing over the next few seconds. Brace yourself.','mind');};
+
+/* ============ WINS ============ */
+$('logWinBtn').onclick=()=>{
+  const a=+$('winAmt').value,src=$('winSrc').value.trim()||'Hustle win';
+  if(!a||a<=0){toast(' Enter an amount','How much did you earn? Even £1 counts.','money');return;}
+  S.wins.unshift({amt:a,src,day:new Date().toLocaleDateString('en-GB',{day:'numeric',month:'short'})+' · '+new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'})});
+  $('winAmt').value='';$('winSrc').value='';save();renderWins();renderHome();bigBurst();addXP(30,'£'+a+' win logged');
+};
+
+/* ============ SETTINGS ============ */
+document.querySelectorAll('.tgl').forEach(t=>t.onclick=()=>{t.classList.toggle('on');S.settings[t.dataset.s]=t.classList.contains('on');save();toast(' Saved','Hype preferences updated.','mind');});
+function syncToggles(){document.querySelectorAll('.tgl').forEach(t=>t.classList.toggle('on',!!S.settings[t.dataset.s]));$('hypeSel').value=S.hype||'balanced';}
+$('hypeSel').onchange=e=>{S.hype=e.target.value;save();startHype();toast(' Hype intensity: '+e.target.selectedOptions[0].text,'Your coach will now push you at this pace. No mercy.','mind');};
+$('permBtn').onclick=async()=>{
+  if(!('Notification' in window)){$('permTxt').textContent='Not supported in this browser — in-app pushes still work!';return;}
+  const p=await Notification.requestPermission();
+  $('permTxt').textContent=p==='granted'?' Enabled! Browser notifications are enabled while this page is open.':'Permission: '+p+' — in-app pushes still fire regardless.';
+  $('permBtn').textContent=p==='granted'?' Enabled':'Enable';
+  if(p==='granted')sysPush('Coach is LIVE','Browser notifications are enabled while this page is open. ');
+};
+$('resetBtn').onclick=()=>{if(confirm('Reset EVERYTHING? Streak, XP, path, wins — all gone.')){localStorage.removeItem(KEY);location.reload();}};
+
+/* ============ ONBOARDING ============ */
+let ob={step:0,name:'',focus:'both',goal:'',moneyTarget:500,targetDate:'',intensity:'normal',hype:'balanced'};
+const OB_T=[["What's your name, future legend?","I'm Blaze — your on-device coach. I build your step-by-step path, and gives reminders while this page is open."],["What's the mission? ","Pick your battleground. I'll build a full step-by-step path with phases, milestones and daily quests."],["Define the target ","Specific goals get specific paths. Give me numbers and dates — vague goals get vague results."],["Choose your hype level ","How hard should I push you? (You can change this anytime in Wins → Push HQ.)"]];
+function renderOb(){
+  $('obTitle').textContent=OB_T[ob.step][0];$('obSub').textContent=OB_T[ob.step][1];
+  document.querySelectorAll('#obSteps i').forEach((s,i)=>s.classList.toggle('on',i<=ob.step));
+  $('obBack').style.visibility=ob.step===0?'hidden':'visible';
+  $('obNext').textContent=ob.step===3?' BUILD MY PATH':'Continue →';
+  const b=$('obBody');let h='';
+  if(ob.step===0)h=`<label>Your first name</label><input id="obName" placeholder="e.g. Jay" value="${esc(ob.name)}" maxlength="20">`;
+  if(ob.step===1)h=`<div class="opt-grid">
+    <div class="opt ${ob.focus==='money'?'sel':''}" data-f="money"><div class="e"></div><b>Make Money</b><small>Side hustle → first £ → scale</small></div>
+    <div class="opt ${ob.focus==='study'?'sel':''}" data-f="study"><div class="e"></div><b>Study / Grades</b><small>Focus, recall, exam-ready</small></div></div>
+    <div class="opt ${ob.focus==='both'?'sel':''}" data-f="both" style="margin-top:10px"><div class="e"></div><b>BOTH — Rich & Smart</b><small>The full double-threat path (recommended )</small></div>`;
+  if(ob.step===2)h=`<label>Your goal in one sentence</label><input id="obGoal" placeholder="e.g. Make £500 + get all 7s in GCSEs" value="${esc(ob.goal)}" maxlength="90">
+    ${ob.focus!=='study'?'<label> Money target (£)</label><input id="obMoney" type="number" min="10" value="'+ob.moneyTarget+'">':''}
+    <label> Target date</label><input id="obDate" type="date" value="${ob.targetDate}">
+    <label> Daily intensity</label><select id="obInt"><option value="light"> Light — ~30 min/day</option><option value="normal"> Normal — ~1 hr/day</option><option value="savage"> Savage — 2+ hrs/day</option></select>`;
+  if(ob.step===3)h=`<div class="hype-opts">
+    <div class="hype ${ob.hype==='chill'?'sel':''}" data-h="chill"><div class="e"></div><div><b>Chill</b><small>A nudge every ~2 minutes while open</small></div></div>
+    <div class="hype ${ob.hype==='balanced'?'sel':''}" data-h="balanced"><div class="e"></div><div><b>Balanced (recommended)</b><small>A nudge every ~45 seconds while open</small></div></div>
+    <div class="hype ${ob.hype==='beast'?'sel':''}" data-h="beast"><div class="e"></div><div><b>BEAST MODE</b><small>A nudge every ~20 seconds while open.</small></div></div></div>`;
+  b.innerHTML=h;
+  b.querySelectorAll('.opt').forEach(o=>o.onclick=()=>{ob.focus=o.dataset.f;renderOb();});
+  b.querySelectorAll('.hype').forEach(x=>x.onclick=()=>{ob.hype=x.dataset.h;renderOb();});
+  if($('obInt'))$('obInt').value=ob.intensity;
+}
+$('obBack').onclick=()=>{collectOb();if(ob.step>0){ob.step--;renderOb();}};
+$('obNext').onclick=()=>{
+  collectOb();
+  if(ob.step===0&&!ob.name.trim()){toast(' Name needed','Tell me your name so I can scream it in hype messages. ','mind');return;}
+  if(ob.step===2&&!ob.goal.trim()){toast(' Goal needed','One sentence. What does winning look like?','mind');return;}
+  if(ob.step<3){ob.step++;renderOb();}
+  else finishOb();
+};
+function collectOb(){
+  if($('obName'))ob.name=$('obName').value;
+  if($('obGoal'))ob.goal=$('obGoal').value;
+  if($('obMoney'))ob.moneyTarget=+$('obMoney').value||500;
+  if($('obDate'))ob.targetDate=$('obDate').value;
+  if($('obInt'))ob.intensity=$('obInt').value;
+}
+function finishOb(){
+  S.name=ob.name.trim().slice(0,20)||'champ';S.focus=ob.focus;S.goal=ob.goal.trim().slice(0,90);
+  S.moneyTarget=ob.moneyTarget;S.targetDate=ob.targetDate;S.intensity=ob.intensity;S.hype=ob.hype;
+  S.doneIntro=true;S.streak=1;S.lastDay=todayStr();
+  buildPath();ensureQuests();
+  S.chat=[{me:false,txt:`Your path is ready, ${S.name}. I am a rule-based coach, and I can use the goals, progress, and Vinted activity you log here. I will be direct: choose one action and start. When you do the work, I will give you credit.`}];
+  save();$('onboard').classList.add('hidden');renderAll();syncToggles();startHype();bigBurst();
+  push(' PATH BUILT — LFG!',fill('{name}, your step-by-step path is ready. 4 phases and daily actions are ready. Your next job: start.'),'mind');
+  setTimeout(()=>hypePush(),4000);
+}
+$('newGoalBtn').onclick=()=>{ob={step:0,name:S.name||'',focus:S.focus||'both',goal:S.goal||'',moneyTarget:S.moneyTarget||500,targetDate:S.targetDate||'',intensity:S.intensity||'normal',hype:S.hype||'balanced'};renderOb();$('onboard').classList.remove('hidden');};
+$('rebuildBtn').onclick=()=>{buildPath();renderPath();renderHome();toast(' Path rebuilt','Fresh phases, fresh milestones. Same mission: WIN.','mind');};
+
+/* ============ CONFETTI ============ */
+const cv=$('confetti'),cx=cv.getContext('2d');let parts=[];
+function sizeCv(){cv.width=innerWidth;cv.height=innerHeight;}sizeCv();addEventListener('resize',sizeCv);
+function burst(n=40){for(let i=0;i<n;i++)parts.push({x:innerWidth/2+(Math.random()-.5)*200,y:innerHeight*0.35,r:3+Math.random()*5,c:pick(['#fbbf24','#ec4899','#8b5cf6','#22d3ee','#22c55e']),vx:(Math.random()-.5)*9,vy:Math.random()*-8-2,l:1});}
+function bigBurst(){burst(130);}
+(function loop(){cx.clearRect(0,0,cv.width,cv.height);parts=parts.filter(p=>p.l>0);parts.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.3;p.l-=.012;cx.globalAlpha=Math.max(0,p.l);cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r,0,7);cx.fill();});cx.globalAlpha=1;requestAnimationFrame(loop);})();
+
+/* ============ VINTED TRACKER + THEMES ============ */
+const themeSelect=$('themeSelect');
+function applyTheme(theme){document.documentElement.dataset.theme=theme;themeSelect.value=theme;try{localStorage.setItem('momentum_theme',theme)}catch(e){}}
+themeSelect.onchange=()=>applyTheme(themeSelect.value);
+function renderVinted(){
+  const list=S.vinted||[];
+  $('vCount').textContent=list.length;
+  $('vActive').textContent=list.filter(x=>x.status==='listed').length;
+  $('vSales').textContent='£'+list.filter(x=>x.status==='sold').reduce((a,x)=>a+Number(x.price),0).toFixed(2);
+  const el=$('vList');el.innerHTML='';
+  if(!list.length){el.innerHTML='<div class="v-empty"><div class="empty-symbol">↗</div><b>Nothing in the pipeline yet.</b><p>Add your first item to start tracking your progress.</p></div>';return;}
+  list.forEach((item,index)=>{
+    const row=document.createElement('div');row.className='v-item';
+    row.innerHTML=`<div class="v-item-main"><div class="v-item-icon">${item.status==='sold'?'✓':'↗'}</div><div><b>${esc(item.name)}</b><small>${item.status==='sold'?'SOLD':'LISTED'} · £${Number(item.price).toFixed(2)}</small></div></div><div class="v-actions">${item.status==='listed'?'<button class="v-sold" type="button">Mark sold</button>':''}<button class="v-delete" type="button" aria-label="Delete item">×</button></div>`;
+    const sold=row.querySelector('.v-sold');if(sold)sold.onclick=()=>{item.status='sold';save();renderVinted();};
+    row.querySelector('.v-delete').onclick=()=>{if(confirm('Remove this item from your tracker?')){S.vinted.splice(index,1);save();renderVinted();}};
+    el.appendChild(row);
+  });
+}
+$('vForm').onsubmit=e=>{e.preventDefault();const name=$('vItem').value.trim(),price=Number($('vPrice').value);if(!name||!Number.isFinite(price)||price<=0)return;S.vinted=S.vinted||[];S.vinted.unshift({name,price,status:$('vStatus').value});save();renderVinted();e.target.reset();};
+try{applyTheme(localStorage.getItem('momentum_theme')||'volt')}catch(e){applyTheme('volt')}
+/* ============ INIT ============ */
+load();
+function cleanOldEmoji(value){if(typeof value==='string')return value.replace(/\p{Extended_Pictographic}|\uFE0F|\u200D/gu,'');if(Array.isArray(value))return value.map(cleanOldEmoji);if(value&&typeof value==='object'){Object.keys(value).forEach(k=>value[k]=cleanOldEmoji(value[k]));}return value;}
+cleanOldEmoji(S);ensureQuests();
+$('yr').textContent=new Date().getFullYear();
+if(!S.doneIntro){renderOb();$('onboard').classList.remove('hidden');}
+else{renderAll();}
+renderAll();renderVinted();syncToggles();startHype();drawT();
+if('Notification' in window&&Notification.permission==='granted'){$('permBtn').textContent=' Enabled';$('permTxt').textContent=' Enabled! Browser notifications are enabled while this page is open.';}
+// welcome-back push
+if(S.doneIntro)setTimeout(()=>{push(pick([' Coach check-in',' Still hungry?',' Daily ignition'])[0]||' Coach check-in',fill(pick([`Welcome back, {name}. Streak: ${S.streak||0} days. Quests waiting: ${S.quests.filter(q=>!q.done).length}. Excuses accepted: 0.`,`{name}! Your goals missed you. ${S.quests.filter(q=>!q.done).length} quests left today — first one takes 5 mins. GO.`])) ,'mind',true);},2500);
+setInterval(()=>{ensureQuests();renderHome();renderTop();},30000); // new-day rollover
+</script>
+</body>
+</html>
